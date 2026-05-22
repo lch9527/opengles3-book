@@ -208,7 +208,7 @@ int esMain ( ESContext *esContext )
 {
    esContext->userData = malloc ( sizeof ( UserData ) );
 
-   esCreateWindow ( esContext, "Hello Triangle", 320, 240, ES_WINDOW_RGB );
+   esCreateWindow ( esContext, "Hello Triangle", 1920, 1080, ES_WINDOW_RGB );
 
    if ( !Init ( esContext ) )
    {
