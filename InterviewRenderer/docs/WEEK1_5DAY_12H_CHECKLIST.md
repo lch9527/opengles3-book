@@ -1,13 +1,11 @@
-﻿# Week 1 Checklist (5 Days, 12h/Day)
+# Week 1 Checklist (5 Days, 6h/Day)
 
-## Day 1 - Environment + Rendering Flow Grounding
+## Day 1 - Completed: Environment + Rendering Flow Grounding
 
-### Build and run
-- Install Linux deps in WSL2 Ubuntu.
-- Build root repo with CMake.
-- Run `Hello_Triangle`.
+### Read
+- LearnOpenGL: OpenGL, Creating a Window, Hello Window, Hello Triangle.
 
-### Code reading order
+### Trace
 1. `Common/Include/esUtil.h`
 2. `Common/Source/esUtil.c`
 3. `Common/Source/LinuxX11/esUtil_X11.c`
@@ -15,53 +13,91 @@
 
 ### Required outputs
 - Explain `ESContext` lifecycle and EGL setup.
-- Explain where draw loop calls user callback.
+- Explain where the draw loop calls the user callback.
 - Write 10 bullets on disk-to-pixel flow.
 
-## Day 2 - C++ Skeleton and First Draw
+## Day 2 - Triangle, Shaders, First Data Structures
 
-### Implementation tasks
-- Build `InterviewRenderer` target.
-- Validate `EsContextLinux` startup/shutdown path.
-- Validate `ShaderProgram` compile/link error logs.
-- Draw triangle from custom C++ code path.
+### Read
+- LearnOpenGL: Hello Triangle.
+- LearnOpenGL: Shaders.
 
-### Required outputs
-- screenshot or terminal proof of app run
-- class responsibility notes for context + shader wrappers
+### Trace
+- `Chapter_2/Hello_Triangle/Hello_Triangle.c`
+- `Chapter_6/Example_6_3/Example_6_3.c`
+- `InterviewRenderer/src/ShaderProgram.cpp`
+- `InterviewRenderer/src/main.cpp`
 
-## Day 3 - Geometry and Camera Path
-
-### Implementation tasks
-- Add MVP transform path.
-- Add indexed draw flow.
-- Add small mesh abstraction for CPU->GPU upload.
+### Code practice
+- Define responsibilities for `Vertex`, `MeshData`, and `ShaderProgram`.
+- Build and run `InterviewRenderer`.
+- Record one shader compile/link failure mode and how the code reports it.
 
 ### Required outputs
-- rotating object render
-- math note: model/view/projection roles
+- Explain vertex attributes, vertex shader, fragment shader, program link, and draw call.
+- Write a small data-structure note: what lives on CPU vs GPU for a triangle.
 
-## Day 4 - Textures and Instancing
+## Day 3 - Buffers, VAOs, Indexing, Memory Layout
 
-### Implementation tasks
-- Texture2D loader/binder skeleton.
-- sampler state handling (wrap/filter/mipmap)
-- instanced draw path and per-instance data
+### Read
+- LearnOpenGL: buffer objects and VAO parts from Hello Triangle.
+- Skim LearnOpenGL: Advanced Data.
+
+### Trace
+- `Chapter_6/VertexBufferObjects/VertexBufferObjects.c`
+- `Chapter_6/VertexArrayObjects/VertexArrayObjects.c`
+- `Chapter_6/MapBuffers/MapBuffers.c`
+
+### Code practice
+- Design `BufferObject`, `VertexArray`, and `Mesh` RAII wrappers.
+- Include copy-delete and move-allow ownership policy.
+- Write a small layout table for position, normal, color, and UV attributes.
 
 ### Required outputs
-- textured scene
-- instancing validation with N instances
-- draw call count log
+- Explain CPU array vs GPU buffer.
+- Explain stride, offset, index buffer, and VAO state.
+- List two bugs caused by incorrect attribute layout.
 
-## Day 5 - Week 1 Integration Gate
+## Day 4 - Textures and Disk-to-Pixel
 
-### Implementation tasks
-- integrate triangle/mesh/texture/instance path into one scene
-- refactor ownership and cleanup paths
-- produce baseline performance numbers
+### Read
+- LearnOpenGL: Textures.
+
+### Trace
+- `Chapter_9/Simple_Texture2D/Simple_Texture2D.c`
+- `Chapter_9/TextureWrap/TextureWrap.c`
+- `Chapter_9/MipMap2D/MipMap2D.c`
+- `Chapter_10/MultiTexture/MultiTexture.c`
+- `Common/Source/esUtil.c` texture loading path.
+
+### Code practice
+- Design `Texture2D`, `SamplerState`, and `Material`.
+- Sketch texture lifetime: file path -> CPU pixels -> GL texture -> shader sampler.
+- Record texture unit binding rules for one-texture and two-texture cases.
+
+### Required outputs
+- Explain `esLoadTGA`, `glTexImage2D`, wrap modes, filters, mipmaps, and sampler uniforms.
+- Write one paragraph on why texture upload and texture sampling are separate steps.
+
+## Day 5 - 3D Math Foundation
+
+### Read
+- LearnOpenGL: Transformations.
+- LearnOpenGL: Coordinate Systems.
+
+### Trace
+- `Chapter_6/Example_6_6/Example_6_6.c`
+- `Chapter_8/Simple_VertexShader/Simple_VertexShader.c`
+- `Common/Source/esTransform.c`
+
+### Code practice
+- Sketch or implement `Vec3`, `Mat4`, `dot`, `cross`, `normalize`, and matrix multiply tests.
+- Write expected results for:
+  - `dot((1,0,0), (0,1,0))`
+  - `cross((1,0,0), (0,1,0))`
+  - normalizing `(3,4,0)`
 
 ### Acceptance criteria
-- app runs stably for 2+ minutes
-- no shader compile/link failures
-- baseline metrics recorded (`FPS`, `frame ms`, `draw calls`)
-- 1-page architecture note completed
+- Explain local, world, view, clip, NDC, and screen spaces.
+- Explain model, view, projection, and MVP matrix order.
+- Explain how dot product relates to angle and how cross product creates a perpendicular vector.
