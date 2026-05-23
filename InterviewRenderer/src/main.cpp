@@ -1,9 +1,10 @@
-﻿#include "EsContextLinux.h"
+#include "EsContextLinux.h"
+#include "MeshData.h"
 #include "ShaderProgram.h"
 
 #include <GLES3/gl3.h>
 
-#include <array>
+#include <cstddef>
 #include <iostream>
 
 int main() {
@@ -15,15 +16,19 @@ int main() {
 
   constexpr const char* kVertexShader = R"(#version 300 es
 layout(location = 0) in vec3 aPos;
+layout(location = 1) in vec4 aColor;
+out vec4 vColor;
 void main() {
+  vColor = aColor;
   gl_Position = vec4(aPos, 1.0);
 })";
 
   constexpr const char* kFragmentShader = R"(#version 300 es
 precision mediump float;
+in vec4 vColor;
 out vec4 FragColor;
 void main() {
-  FragColor = vec4(0.87, 0.17, 0.22, 1.0);
+  FragColor = vColor;
 })";
 
   ShaderProgram program;
@@ -32,11 +37,7 @@ void main() {
     return 1;
   }
 
-  std::array<float, 9> triangle = {
-      0.0f,  0.5f, 0.0f,
-     -0.6f, -0.5f, 0.0f,
-      0.6f, -0.5f, 0.0f,
-  };
+  MeshData triangle = MeshData::makeTriangle();
 
   GLuint vao = 0;
   GLuint vbo = 0;
@@ -44,9 +45,15 @@ void main() {
   glGenBuffers(1, &vbo);
   glBindVertexArray(vao);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle.data(), GL_STATIC_DRAW);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+  glBufferData(GL_ARRAY_BUFFER,
+               static_cast<GLsizeiptr>(triangle.vertices.size() * sizeof(Vertex)),
+               triangle.vertices.data(), GL_STATIC_DRAW);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                        reinterpret_cast<void*>(offsetof(Vertex, position)));
   glEnableVertexAttribArray(0);
+  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                        reinterpret_cast<void*>(offsetof(Vertex, color)));
+  glEnableVertexAttribArray(1);
 
   while (!context.shouldClose()) {
     glViewport(0, 0, context.width(), context.height());
@@ -55,7 +62,7 @@ void main() {
 
     program.use();
     glBindVertexArray(vao);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(triangle.vertices.size()));
 
     context.swapBuffers();
   }
